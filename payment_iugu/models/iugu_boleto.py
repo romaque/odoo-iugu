@@ -18,14 +18,20 @@ os.environ["IUGU_API_TOKEN"] = "SEU_IUGU_API_TOKEN"
 class IuguBoleto(osv.Model, Invoice):
     _inherit = 'payment.acquirer'
 
-    def _get_providers(self, cr, uid, context=None):
-        providers = super(IuguBoleto, self)._get_providers(cr, uid, context=context)
-        providers.append(['iugu', _('Boleto Bancário')])
-        return providers
+    provider = fields.Selection(selection_add=[('iugu', 'Iugu Boleto Bancário')])
 
     def iugu_get_form_action_url(self, cr, uid, id, context=None):
         return '/payment/iugu/feedback'
 
+    @api.multi
+    def iugu_form_generate_values(self, values):
+        # TODO Aqui retorna os valores que são usados na
+        # renderização do botão de pagamento
+        return {
+            'nome': 'nome',
+            'item_name': 'aa',
+        }
+    
     def _create_iugu_invoice(self, data):
 
         nome = data.get('name')
