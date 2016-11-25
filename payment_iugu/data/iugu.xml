@@ -2,7 +2,7 @@
 <openerp>
     <data noupdate="1">
         <record id="payment_acquirer_iugu" model="payment.acquirer">
-            <field name="name">Boleto Bancário</field>
+            <field name="name">Iugu - Boleto Bancário</field>
             <field name="image" type="base64" file="payment_iugu/static/description/icon.png"/>
             <field name="provider">iugu</field>
             <field name="company_id" ref="base.main_company"/>
@@ -12,6 +12,16 @@
             <field name="website_published" eval="True"/>
             <field name="pre_msg">
                 <![CDATA[ <p>Pagamento utilizando o Boleto Bancário.</p> ]]>
+            </field>
+            <field name="description" type="html">
+                <p>
+                    Muito além de pagamentos online:
+                    uma infraestrutura financeira para seu negócio crescer
+                </p>
+                <ul class="list-inline">
+                    <li><i class="fa fa-check"/>eCommerce</li>
+                    <li><i class="fa fa-check"/>Botão de pagamento em cotações online</li>
+                </ul>
             </field>
         </record>
     </data>
