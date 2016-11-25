@@ -8,6 +8,7 @@
     'version': '1.0',
     'depends': ['account', 'payment'],
     'data': [
+        'views/payment_views.xml',
         'views/iugu.xml',
         'data/iugu.xml',
     ],

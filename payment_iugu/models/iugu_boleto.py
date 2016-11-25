@@ -19,7 +19,9 @@ class IuguBoleto(models.Model):
     provider = fields.Selection(
         selection_add=[('iugu', 'Iugu Boleto Bancário')])
 
-    def iugu_get_form_action_url(self, cr, uid, id, context=None):
+    iugu_api_key = fields.Char('Iugu Api Token', required_if_provider='iugu', groups='base.group_user')
+
+    def iugu_get_form_action_url(self):
         return '/payment/iugu/feedback'
 
     # Esses parametros aqui serão enviados via post, é muito importante
@@ -45,45 +47,6 @@ class IuguBoleto(models.Model):
         })
         return iugu_tx_values
 
-    # Não sei porque você criou aqui esse metodo, mas não acredito que seja o
-    # correto
-    def _create_iugu_invoice(self, data):
-
-        nome = data.get('name')
-        item_name = data.get('item_name')
-        email = data.get('email')
-        address = data.get('address')
-        city = data.get('city')
-        zip = data.get('zip')
-        country = data.get('country')
-        item_number = data.get('item_number')
-        amount = int(data.get('amount', '0'))
-        today = datetime.date.today()
-
-        dados_invoice = {
-            'email': email,
-            'due_date': today.strftime('%d/%m/%Y'),
-            'items': [{
-                      'description': item_name,
-                      'quantity': item_number,
-                      'price_cents': amount * 100
-                      }],
-            'payer': {
-                'name': nome,
-                'address': {
-                    'street': address,
-                    'city': city,
-                    'country': country,
-                    'zip_cod': zip
-                }
-            }
-        }
-
-        invoice = Invoice()
-        result = invoice.create(dados_invoice)
-
-        _logger.info(pprint.pformat(result))
-
 
 class TransactionIugu(models.Model):
     _inherit = 'payment.transaction'
@@ -92,17 +55,17 @@ class TransactionIugu(models.Model):
     iugu_id = fields.Char(string=u'ID Transação')
 
     @api.model
-    def _cielo_form_get_tx_from_data(self, data):
+    def _iugu_form_get_tx_from_data(self, data):
 
         # Este método é chamada com os dados recebidos do iugu para
         # pesquisar e retornar a transação já cadastrada no odoo
-        reference = data.get('order_number')  # trocar aqui pela chave correta
+        reference = data.get('reference')  # trocar aqui pela chave correta
         txs = self.env['payment.transaction'].search(
             [('reference', '=', reference)])
         return txs[0]
 
     @api.multi
-    def _cielo_form_validate(self, data):
+    def _iugu_form_validate(self, data):
         # Esse metodo é chamado com os dados, aqui sim vai ser setado
         # um dos estados na transação, pending, done, error, authorized, cancel
         reference = data.get('order_number')

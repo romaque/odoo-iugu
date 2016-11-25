@@ -7,6 +7,7 @@
             <field name="provider">iugu</field>
             <field name="company_id" ref="base.main_company"/>
             <field name="view_template_id" ref="iugu_boleto_button"/>
+            <field name="iugu_api_key">dummy</field>
             <field name="auto_confirm">none</field>
             <field name="environment">test</field>
             <field name="website_published" eval="True"/>
