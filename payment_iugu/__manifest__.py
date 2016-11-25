@@ -3,7 +3,7 @@
     'name': "Método de Pagamento Iugu",
     'summary': "Payment Acquirer: Iugu Implementation",
     'description': """Iugu payment gateway for Odoo.""",
-    'author': "Romaque Máximo",
+    'author': "Romaque Máximo, Danimar Ribeiro",
     'category': 'Accounting',
     'version': '1.0',
     'depends': ['account', 'payment'],
