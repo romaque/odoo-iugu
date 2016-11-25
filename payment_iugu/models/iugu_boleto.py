@@ -3,8 +3,8 @@
 from openerp.addons.payment.models.payment_acquirer import ValidationError
 from openerp.osv import osv
 from openerp.tools.float_utils import float_compare
-from openerp.tools.translate import _
 from iugu import Invoice
+from odoo import api, fields, models, _
 
 import logging
 import pprint
@@ -25,12 +25,25 @@ class IuguBoleto(osv.Model, Invoice):
 
     @api.multi
     def iugu_form_generate_values(self, values):
-        # TODO Aqui retorna os valores que são usados na
-        # renderização do botão de pagamento
-        return {
-            'nome': 'nome',
-            'item_name': 'aa',
-        }
+
+		iugu_tx_values = dict(values)
+		iugu_tx_values.update({
+	        'cmd': '_xclick',
+	        'item_name': values['reference'],
+	        'item_number': values['reference'],
+	        'amount': values['amount'],
+	        'currency_code': values['currency'] and values['currency'].name or '',
+	        'address1': values.get('partner_address'),
+	        'city': values.get('partner_city'),
+	        'country': values.get('partner_country') and values.get('partner_country').code or '',
+	        'state': values.get('partner_state') and (values.get('partner_state').code or values.get('partner_state').name) or '',
+	        'email': values.get('partner_email'),
+	        'zip_code': values.get('partner_zip'),
+	        'name': values.get('partner_name'),
+	        'last_name': values.get('partner_last_name'),
+	    })
+		return iugu_tx_values
+
     
     def _create_iugu_invoice(self, data):
 

@@ -18,7 +18,7 @@
                 <input type='hidden' name='amount' t-att-value='amount'/>
                 <input type='hidden' name='currency' t-att-value='currency.name'/>
 
-                <input type="hidden" name="name" t-att-value="first_name"/>
+                <input type="hidden" name="name" t-att-value="name"/>
                 <input type="hidden" name="address1" t-att-value="address1"/>
                 <input type="hidden" name="city" t-att-value="city"/>
                 <input type="hidden" name="country" t-att-value="country"/>
