@@ -10,9 +10,6 @@ from odoo import api, fields, models
 
 _logger = logging.getLogger(__name__)
 
-os.environ["IUGU_API_TOKEN"] = "SEU_IUGU_API_TOKEN"
-
-
 class IuguBoleto(models.Model):
     _inherit = 'payment.acquirer'
 
@@ -32,7 +29,7 @@ class IuguBoleto(models.Model):
         iugu_tx_values = dict(values)
         iugu_tx_values.update({
             'cmd': '_xclick',
-            'item_name': values['reference'],
+            'item_name': '%s: %s' % (self.company_id.name, values['reference']),
             'item_number': values['reference'],
             'amount': values['amount'],
             'currency_code': values['currency'] and values['currency'].name or '',
@@ -45,6 +42,7 @@ class IuguBoleto(models.Model):
             'name': values.get('partner_name'),
             'last_name': values.get('partner_last_name'),
         })
+
         return iugu_tx_values
 
 
@@ -59,22 +57,82 @@ class TransactionIugu(models.Model):
 
         # Este método é chamada com os dados recebidos do iugu para
         # pesquisar e retornar a transação já cadastrada no odoo
-        reference = data.get('reference')  # trocar aqui pela chave correta
-        txs = self.env['payment.transaction'].search(
-            [('reference', '=', reference)])
-        return txs[0]
+        reference = data.get('reference')
+        tx = self.search([('reference', '=', reference)])
+
+        if not tx or len(tx) > 1:
+            error_msg = 'received data for reference %s' % pprint.pformat(reference)
+            if not tx:
+                error_msg += '; no order found'
+            else:
+                error_msg += '; multiple order found'
+            _logger.info(error_msg)
+
+        return tx
 
     @api.multi
     def _iugu_form_validate(self, data):
-        # Esse metodo é chamado com os dados, aqui sim vai ser setado
-        # um dos estados na transação, pending, done, error, authorized, cancel
-        reference = data.get('order_number')
-        iugu_id = data.get('tid', False)
-        state_iugu = data.get('payment_status')
+
+        _logger.info(pprint.pformat(data))
+
+        if self.state == 'done':
+            return True
+
+        invoice = self.env['payment.token'].sudo().create({
+            'name': data['name'],
+            'item_name': data['item_name'],
+            'email': data['email'],
+            'address': data['address1'],
+            'city': data['city'],
+            'zip': data['zip'],
+            'acquirer_id': self.acquirer_id.id,
+            'partner_id': self.partner_id.id,
+            'item_number': data['item_number'],
+            'country': data['country'],
+            'amount': data['amount']
+        })
 
         values = {
-            'reference': reference,
-            'acquirer_reference': iugu_id,
-            'state': state_iugu,
+            'acquirer_reference': invoice['acquirer_ref'],
+            'state': 'pending',
         }
+
         return self.write(values)
+
+class PaymentTokenIugu(models.Model):
+    _inherit = 'payment.token'
+
+    @api.model
+    def iugu_create(self, values):
+
+        today = datetime.date.today()
+
+        acquirer = self.env['payment.acquirer'].browse(values['acquirer_id'])
+
+        os.environ["IUGU_API_TOKEN"] = acquirer.iugu_api_key
+
+        dados_invoice = {
+            'email': values['email'],
+            'due_date': today.strftime('%d/%m/%Y'),
+            'items': [{
+                      'description': values['item_name'],
+                      'quantity': 1,
+                      'price_cents': int(float(values['amount'])) * 100
+                      }],
+            'payer': {
+                'name': values['name'],
+                'address': {
+                    'street': values['address'],
+                    'city': values['city'],
+                    'country': values['country'],
+                    'zip_cod': values['zip']
+                }
+            }
+        }
+
+        invoice = Invoice()
+        result = invoice.create(dados_invoice)
+
+        return {
+            'acquirer_ref': result['id']
+        }

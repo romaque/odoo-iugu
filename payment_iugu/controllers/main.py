@@ -17,4 +17,4 @@ class IuguController(http.Controller):
 
         res = request.env['payment.transaction'].sudo().form_feedback(
            post, 'iugu')
-        return res
+        return werkzeug.utils.redirect(post.pop('return_url', '/'))
