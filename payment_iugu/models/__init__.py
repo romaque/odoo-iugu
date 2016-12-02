@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-import iugu_boleto
+from . import iugu_boleto

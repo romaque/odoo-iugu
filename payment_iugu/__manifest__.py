@@ -7,6 +7,9 @@
     'category': 'Accounting',
     'version': '1.0',
     'depends': ['account', 'payment'],
+    'external_dependencies': {
+        'python': ['iugu'],
+    },
     'data': [
         'views/payment_views.xml',
         'views/iugu.xml',

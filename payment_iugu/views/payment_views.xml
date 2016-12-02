@@ -8,6 +8,7 @@
             <xpath expr='//group[@name="acquirer"]' position='after'>
                 <group attrs="{'invisible': [('provider', '!=', 'iugu')]}">
                     <field name="iugu_api_key"/>
+                    <field name="return_url" />
                 </group>
             </xpath>
         </field>

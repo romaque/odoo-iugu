@@ -1,8 +1,6 @@
 ![Licence](https://img.shields.io/badge/licence-AGPL--3-blue.svg)
-
-[![Build Status](https://travis-ci.org/Trust-Code/trustcode-addons.svg?branch=10.0)](https://travis-ci.org/Trust-Code/trustcode-addons)
-
-[![Coverage Status](https://coveralls.io/repos/github/Trust-Code/trustcode-addons/badge.svg?branch=10.0)](https://coveralls.io/github/Trust-Code/trustcode-addons?branch=10.0)
+[![Build Status](https://travis-ci.org/romaque/odoo-iugu.svg?branch=master)](https://travis-ci.org/romaque/odoo-iugu)
+[![Coverage Status](https://coveralls.io/repos/github/romaque/odoo-iugu/badge.svg?branch=master)](https://coveralls.io/github/romaque/odoo-iugu?branch=master)
 
 ## Descrição ##
 
